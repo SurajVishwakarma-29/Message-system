@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Encrypted Messaging & Spam Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Encrypted Messaging & Spam Detection</h1>
+        <div class="button-group">
+            <button id="sendBtn">Sender</button>
+            <button id="receiveBtn">Receiver</button>
+            <button id="predictBtn">Predict Message</button>
+        </div>
+        <div id="formArea"></div>
+        <div id="resultArea"></div>
+    </div>
+    <script>
+        document.getElementById("sendBtn").onclick = function() {
+            showSenderForm();
+        };
+        document.getElementById("receiveBtn").onclick = function() {
+            showReceiverForm();
+        };
+        document.getElementById("predictBtn").onclick = function() {
+            showPredictForm();
+        };
+        function showSenderForm() {
+            document.getElementById("formArea").innerHTML = `
+                <form id="senderForm">
+                    <label>Enter Message to Send:</label><br>
+                    <textarea name="message" rows="3" required></textarea><br>
+                    <button type="submit">Encrypt & Send</button>
+                </form>
+            `;
+            document.getElementById("resultArea").innerHTML = '';
+            document.getElementById("senderForm").onsubmit = function(e) {
+                e.preventDefault();
+                let msg = this.message.value;
+                fetch('/send', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({message: msg})
+                })
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById("resultArea").innerHTML =
+                        `<strong>Encrypted Message:</strong> <textarea rows="3" cols="60" readonly>${data.encrypted_message}</textarea>`;
+                });
+            };
+        }
+        function showReceiverForm() {
+            document.getElementById("formArea").innerHTML = `
+                <form id="receiverForm">
+                    <label>Paste Encrypted Message:</label><br>
+                    <textarea name="encrypted_message" rows="3" required></textarea><br>
+                    <button type="submit">Decrypt & Analyze</button>
+                </form>
+            `;
+            document.getElementById("resultArea").innerHTML = '';
+            document.getElementById("receiverForm").onsubmit = function(e) {
+                e.preventDefault();
+                let enc = this.encrypted_message.value;
+                fetch('/receive', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({encrypted_message: enc})
+                })
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById("resultArea").innerHTML =
+                        `<strong>Plain Message:</strong> ${data.plain_message}<br>
+                         <strong>ML Result:</strong> ${data.ml_result} <br>
+                         <strong>Confidence:</strong> ${data.confidence} <br>
+                         <strong>Final Decision:</strong> ${data.final_decision}`;
+                });
+            };
+        }
+        function showPredictForm() {
+            document.getElementById("formArea").innerHTML = `
+                <form id="predictForm">
+                    <label>Enter Message to Predict:</label><br>
+                    <textarea name="message" rows="3" required></textarea><br>
+                    <button type="submit">Check Spam</button>
+                </form>
+            `;
+            document.getElementById("resultArea").innerHTML = '';
+            document.getElementById("predictForm").onsubmit = function(e) {
+                e.preventDefault();
+                let msg = this.message.value;
+                fetch('/predict', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({message: msg})
+                })
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById("resultArea").innerHTML =
+                        `<strong>Prediction:</strong> ${data.label} <br>
+                         <strong>Confidence:</strong> ${data.confidence}`;
+                });
+            };
+        }
+    </script>
+</body>
+</html>

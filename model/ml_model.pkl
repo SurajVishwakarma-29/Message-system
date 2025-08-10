@@ -1,0 +1,11 @@
+# utils/ml_utils.py
+import pickle
+
+with open('model/ml_model.pkl', 'rb') as f:
+    model = pickle.load(f)
+
+def predict_message(msg):
+    # Assume it's preprocessed already for the model
+    prediction = model.predict([msg])[0]b
+    confidence = max(model.predict_proba([msg])[0])
+    return prediction, confidence

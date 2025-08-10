@@ -1,0 +1,39 @@
+{% extends "index.html" %}
+{% block content %}
+<h1>Suraj</h1>
+<div class="chat-container">
+    <h2 class="header">chaigpt</h2>
+
+    <!-- Chat Window -->
+    <div class="chat-window">
+      <!-- Assistant Message -->
+      <div class="message assistant">
+        <strong>YO:</strong>
+        <p>Hello! How can I help you today?</p>
+      </div>
+
+      <!-- User Message -->
+      <div class="message user">
+        <strong>You:</strong>
+        <p>Tell me a joke.</p>
+      </div>
+
+      <!-- Assistant Message -->
+      <div class="message assistant">
+        <strong>Yo:</strong>
+        <p>Why don't scientists trust atoms? Because they make up everything!</p>
+      </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="input-area">
+      <input type="text" placeholder="Send a message..." />
+      <button>Send</button>
+    </div>
+  </div>
+
+  <h2>Data Table</h2>
+  <div class="data-table">
+  {{ table | safe }}
+</div>
+{% endblock %}
