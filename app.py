@@ -2,8 +2,36 @@ from flask import Flask, request, jsonify, render_template
 from utils.crypto_utils import encrypt_message, decrypt_message
 from utils.ml_utils import predict_message
 from utils.fuzzy_utils import apply_fuzzy_logic
-
+from tensorflow.keras.models import load_model
+import pickle 
+import numpy as np
+import os
 app = Flask(__name__)
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_DIR = os.path.join(BASE_DIR, "models")
+
+# Globals for loaded models
+sklearn_model = None
+keras_model = None
+
+def load_artifacts():
+    global sklearn_model, keras_model
+
+    # Load pickle model
+    pkl_path = os.path.join(MODEL_DIR, "tfidf_vectorizer.pkl")
+    with open(pkl_path, "rb") as f:
+        sklearn_model = pickle.load(f)
+
+    # Load keras model
+    keras_path = os.path.join(MODEL_DIR, "spam_classifier_model.keras")
+    keras_model = load_model(keras_path)
+
+    app.logger.info("Loaded sklearn and keras models.")
+
+@app.before_first_request
+def init():
+    load_artifacts()
 
 @app.route('/')
 def home():
