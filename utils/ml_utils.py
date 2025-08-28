@@ -3,10 +3,12 @@ import pickle
 import numpy as np
 import os
 
+MODEL_DIR = os.path.join(BASE_DIR, "model")
+
 # Load model and tokenizer ONCE when module is imported
-model = tf.keras.models.load_model(os.path.join('model', 'spam_model.h5'))
-with open(os.path.join('model', 'tokenizer.pickle'), 'rb') as handle:
-    tokenizer = pickle.load(handle)
+model = tf.keras.models.load_model(os.path.join('model', 'spam_classifier_model.keras'))
+with open(os.path.join(MODEL_DIR, 'tfidf_vectorizer.pkl'), 'rb') as handle:
+    vectorizer = pickle.load(handle)
 maxlen = 50   # Set to the maxlen used during training
 
 def preprocess(text):
